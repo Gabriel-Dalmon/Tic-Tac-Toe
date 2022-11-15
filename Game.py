@@ -1,7 +1,5 @@
 import random
 
-
-
 class Game:
 
     def __init__(self,player1, player2):
@@ -18,7 +16,7 @@ class Game:
 #=== Display
 
     def displayBoard(self):
-        print(self.board)
+        print("",self.board[0], "\n",self.board[1],"\n",self.board[2])
 
 #=== Conditions
     def isSpotExisting(self, spot):
