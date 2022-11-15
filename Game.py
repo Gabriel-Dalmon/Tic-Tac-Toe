@@ -1,5 +1,5 @@
 import random
-from Displayer import *
+from Board import *
 
 class Game:
 
@@ -13,7 +13,7 @@ class Game:
         self.winner = None
         self.pTurn = random.randrange(2)
         self.isOver = False
-        self.win = Displayer()
+        self.win = Board()
 
 #=== Display
 

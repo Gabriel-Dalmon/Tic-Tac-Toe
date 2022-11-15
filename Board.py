@@ -1,7 +1,7 @@
 from tkinter import *
 from functools import partial
 
-class Displayer:
+class Board:
 
     def __init__(self):
 
