@@ -13,7 +13,7 @@ class Game:
 
 #=== Functions
 
-    def setWinner(self, winInfo):
+    def setWinner(self, winData):
         self.isOver = True
         self.winner = self.players[self.pTurn]
 
@@ -34,9 +34,9 @@ class Game:
         while (not self.isOver):
             self.playTurn()
 
-            winInfo = self.board.isWinner()
-            if(winInfo):
-                self.setWinner(winInfo)
+            winData = self.board.isWinner()
+            if(winData):#if nobody is winning, winData = None
+                self.setWinner(winData)
 
 
             self.pTurnSwitch()
