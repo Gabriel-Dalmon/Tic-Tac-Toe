@@ -1,7 +1,23 @@
 from random import randrange
 
 def consoleDisplay(board):
-    print(board[0], "\n",board[1],"\n",board[2])
+    displayBoard = [
+        [" "," "," "],
+        [" "," "," "],
+        [" "," "," "]
+        ]
+    for row in range(0,3) :
+        for col in range(0,3):
+            if(board[row][col] == 1):
+                displayBoard[row][col] = "x"
+            elif(board[row][col] == -1):
+                displayBoard[row][col] = "o"
+    print("",displayBoard[0][0], "|",displayBoard[0][1], "|", displayBoard[0][2], "\n",
+        "-", "|","-", "|","-","\n",
+        displayBoard[1][0], "|",displayBoard[1][1], "|",displayBoard[1][2],"\n",
+        "-", "|","-", "|","-","\n",
+        displayBoard[2][0], "|",displayBoard[2][1], "|",displayBoard[2][2]    
+    )
 
 def chooseSpot():
     x = int(input("X: "))
