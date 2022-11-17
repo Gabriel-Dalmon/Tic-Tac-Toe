@@ -38,7 +38,15 @@ def linesSum(condition,board): #compares the sum of each lines with the paramete
                 return ("col",i)
     return None
 
-def chooseSpot(player, board, pTurn):
+def getPlayableSpots(board):
+    spots = []
+    for row in range(0,3):
+        for col in range(0,3):
+            if board[row][col] == 0:
+                spots.append(row,col)
+    return spots
+
+def chooseSpot(player, board, pTurn, turn):
 
     if player == "CPU":
         conditions = [2*(1 + (pTurn * -2)),2*(1 + (pTurnSwitch(pTurn) * -2))] #conditions[victoire,defaite]
@@ -60,14 +68,24 @@ def chooseSpot(player, board, pTurn):
                     elif(line[1] == 2):
                         if(board[i][2-i] == 0):
                             return (i,2-i)
-
-#[0,0,0]
-#[0,1,-1]
-#[0,-1,0]
-
+        if(turn == 1):
+            #randomCorner()
+            pass
+        elif(turn == 3):
+            #oppositCorner()
+            pass
+        elif(turn == 4 and noCornerTaken() and notOpposit()):
+            #place next to one of the enemy location
+            pass
+        return #random move in playable moves
+        
 #[0,-1,0]
 #[0,1,0]
 #[0,-1,0]
+
+#[0,0,-1]
+#[-1,1,1]
+#[1,-1,-1]
 
 #When CPU starts first:
 #1st: random corner
@@ -112,12 +130,12 @@ def pTurnSwitch(pTurn):
     pTurn = 1 * (1 - pTurn) # if pTurn = 1 => then pTurn = 1*(1-1) = 0, if pTurn = 0 => then pTurn = 1*(1-0) = 1*1 = 1 || switches between 0 and 1
     return pTurn
 
-def playTurn(board, pTurn, player):
-    spot = chooseSpot(player, board, pTurn)
+def playTurn(board, pTurn, player,turn):
+    spot = chooseSpot(player, board, pTurn, turn)
 
     while (not isSpotFree(spot,board)): #if spot not free, we ask the player to pick a new one
         print("Spot is taken already, please choose another spot.")
-        spot = chooseSpot(player, board, pTurn)
+        spot = chooseSpot(player, board, pTurn,turn)
     updateSpot(spot, board, pTurn)
 
 def playGame():
@@ -131,16 +149,18 @@ def playGame():
     winner = None
     pTurn = randrange(2)
     isOver = False
+    turn = 1
     
     print(players[pTurn] + " starts the game.")
 
     while (not isOver):
-        playTurn(board, pTurn, players[pTurn])
+        playTurn(board, pTurn, players[pTurn],turn)
 
         isOver = isWinner(board)
         pTurn = pTurnSwitch(pTurn)
 
         consoleDisplay(board)
+        turn +=1
 
     winner = pTurnSwitch(pTurn)
     print(players[winner] + " won the game.")
