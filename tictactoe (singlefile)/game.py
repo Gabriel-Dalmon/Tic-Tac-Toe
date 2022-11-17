@@ -19,23 +19,15 @@ def consoleDisplay(board):
         displayBoard[2][0], "|",displayBoard[2][1], "|",displayBoard[2][2]    
     )
 
-def chooseSpot(player):
-    if player == "CPU":
 
-        pass
-    else:
-        x = int(input("X: "))
-        y = int(input("Y: "))
-    return (x,y)
 
 def linesSum(condition,board): #compares the sum of each lines with the parameter "condition", returns a list of each line
-
     lDiagSum = board[0][0] + board[1][1] + board[2][2] #Diagonal starting top left
     rDiagSum = board[0][2] + board[1][1] + board[2][0] #Diagonal starting top right
     if(lDiagSum in condition):
         return ("diag",0)
     elif(rDiagSum in condition):
-        return ("diag",1)
+        return ("diag",2)
     else:
         for i in range(0,3):
             rowSum = sum(board[i])
@@ -46,7 +38,50 @@ def linesSum(condition,board): #compares the sum of each lines with the paramete
                 return ("col",i)
     return None
 
+def chooseSpot(player, board, pTurn):
 
+    if player == "CPU":
+        conditions = [2*(1 + (pTurn * -2)),2*(1 + (pTurnSwitch(pTurn) * -2))] #conditions[victoire,defaite]
+        for condition in conditions:
+            line = linesSum(condition,board) #("row",1)
+            if(line[0] == "row"):
+                for i in range (0,3):
+                    if(board[line[1]][i] == 0):
+                        return (line[1],i)
+            elif(line[0] == "col"):
+                for i in range (0,3):
+                    if(board[i][line[1]] == 0):
+                        return (i,line[1])
+            elif(line[0] == "diag"):
+                for i in range (0,3):
+                    if(line[1] == 0):
+                        if(board[i][i] == 0):
+                            return (i,i)
+                    elif(line[1] == 2):
+                        if(board[i][2-i] == 0):
+                            return (i,2-i)
+
+#[0,0,0]
+#[0,1,-1]
+#[0,-1,0]
+
+#[0,-1,0]
+#[0,1,0]
+#[0,-1,0]
+
+#When CPU starts first:
+#1st: random corner
+#2nd: opposit corner
+
+#When CPU plays second
+#1st: if center taken : random corner, else : always center
+#4th : if no corner taken and isOppositExisting = false: search for row/line with a -1 and put a 1 in it
+#6th: take a corner
+
+    else:
+        x = int(input("X: "))
+        y = int(input("Y: "))
+    return (x,y)
 
 def updateSpot(coords, board, pTurn):
     board[coords[1]][coords[0]] = 1 + (pTurn * -2) #if opposer = 0 then case = 1 | if opposer = 1 then case = -1
@@ -78,11 +113,11 @@ def pTurnSwitch(pTurn):
     return pTurn
 
 def playTurn(board, pTurn, player):
-    spot = chooseSpot(player)
+    spot = chooseSpot(player, board, pTurn)
 
     while (not isSpotFree(spot,board)): #if spot not free, we ask the player to pick a new one
         print("Spot is taken already, please choose another spot.")
-        spot = chooseSpot()
+        spot = chooseSpot(player, board, pTurn)
     updateSpot(spot, board, pTurn)
 
 def playGame():
@@ -92,7 +127,7 @@ def playGame():
             [0,0,0]
         ]
 
-    players = ["Player1","Player2"]
+    players = ["Player","CPU"]
     winner = None
     pTurn = randrange(2)
     isOver = False
