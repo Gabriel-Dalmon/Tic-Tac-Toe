@@ -41,12 +41,13 @@ def getCorners(spots):
     return cornersList
 
 def getOppositCorner(corner):
+    newCorner = [None,None]
     for i in range (len(corner)):
         if corner[i] == 2:
-            corner[i]=0
+            newCorner[i] = 0
         else:
-            corner[i]=2
-    return corner
+            newCorner[i]=2
+    return (newCorner[1],newCorner[0])
 
 def linesSum(condition,board): #compares the sum of each lines with the parameter "condition", returns a list of each line
     lDiagSum = board[0][0] + board[1][1] + board[2][2] #Diagonal starting top left
@@ -65,116 +66,95 @@ def linesSum(condition,board): #compares the sum of each lines with the paramete
                 return ("col",i)
     return None
 
-def chooseSpot(player, board, pTurn, turn):
+def chooseSpot(player, board, pTurn, turn, spotsLog):
     if player == "CPU":
         spots = getPlayableSpots(board)
         pos = 1 + (pTurn * -2)
         enemiePos = 1 + (pTurnSwitch(pTurn) * -2)
         conditions = [[2*(1 + (pTurn * -2))],[2*(1 + (pTurnSwitch(pTurn) * -2))]] #conditions[[victoire],[defaite]] each condition is a single element list to be iterable for the linesSum function
-        print(conditions)
         for condition in conditions:
             line = linesSum(condition,board) #("row",1)
-            print(line)
             if(line != None):
                 if(line[0] == "row"):
                     for i in range (0,3):
                         if(board[line[1]][i] == 0):
-                            print(condition)
                             return (i,line[1])
                 elif(line[0] == "col"):
                     for i in range (0,3):
                         if(board[i][line[1]] == 0):
-                            print(condition)
                             return (line[1],i)
                 else:
                     for i in range (0,3):
                         if(line[1] == 0):
                             if(board[i][i] == 0):
-                                print(condition)
                                 return (i,i)
                         elif(line[1] == 2):
                             if(board[i][2-i] == 0):
-                                print(condition)
                                 return (2-i,i)
-
-        if(turn == 1):
-            corner = choice(getCorners(spots))
-            return corner
-        if(turn == 3):
-            if(board[0][0] == 0):
-                untakenCorners = getCorners(spots).remove(getOppositCorner(corner))
-                if(len(getCorners(spots)) == 1):
-                    if (sum(board[corner[1]]) == 0):
-                        untakenCorners.remove(())
-                    return choice(untakenCorners)
-                else:
-                    return choice(untakenCorners)
-            else():
-                return getOppositCorner(corner) #if center taken by opponent, take opposit corner to the previously taken one
         
+        corners = getCorners(spots)
+        if(turn == 1):
+            corner = choice(corners)
+            return corner
+        elif(turn == 3):
+            if(len(corners) == 2):
+                return choice(corners)
+            elif(board[1][1] != 0):
+                if(spotsLog[pTurn][0][0] == 0):
+                    return(0,1)
+                else:
+                    return(2,1)
+            elif((board[1][1] == 0) and (len(corners) == 3)):
+                    if(spotsLog[pTurnSwitch(pTurn)][0][1] != 1 ):
+                        if(spotsLog[pTurn][0][1] == 2):
+                            return (spotsLog[pTurn][0][0],0)
+                        else:
+                            return (spotsLog[pTurn][0][0],2)
+                    else:
+                        if(spotsLog[pTurn][0][0] == 2):
+                            return (0,spotsLog[pTurn][0][1])
+                        else:
+                            return (2,spotsLog[pTurn][0][1])
+        elif(turn == 5):
+            if(len(corners) == 1):
+                return choice(corners)
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1),(1,2),(0,1)]): #if opponent played elsewhere at his first turn than in the center or in a corner
+                return (1,1) #then pick center
+        
+        elif(turn == 2):
+            print(spotsLog[pTurnSwitch(pTurn)][0])
+            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]):
+                return (1,1)
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1)]):
+                return (2,0)
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,2),(0,1)]):
+                return (0,2)
+            elif(board[1][1] == 0):
+                corner = choice(corners)
+                return corner
+                
+        elif(turn == 4):
+            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]): 
+                if(sum(board[1]) != 0):
+                    return (0,1)
+                else:
+                    return (1,0)
+            elif(spotsLog[pTurnSwitch(pTurn)][0] == (1,1)):
+                corner = choice(corners)
+                return corner
+            elif(((spotsLog[pTurnSwitch(pTurn)][0][0] == spotsLog[pTurnSwitch(pTurn)][1][0]) or (spotsLog[pTurnSwitch(pTurn)][0][1] == spotsLog[pTurnSwitch(pTurn)][1][1])) and board[0][0] == 0):
+                corners.remove(getOppositCorner(spotsLog[pTurn][0]))
+                return corners[0]
+            
 
+        randomSpot = choice(spots)
+        print("random pick")
+        return (randomSpot[1],randomSpot[0])
 
-    #     print(turn)
-    #     if(turn == 1):
-    #         print("random corner")
-    #         corner = (randrange(0,3,2),randrange(0,3,2))
-    #         return (corner) #randomCorner
-    #     elif(turn == 3):
-    #         if(board[1][1] == enemiePos):
-    #             #oppositCorner()
-    #             if(board[0][0] == pos):
-    #                 return (2,2)
-    #             elif(board[2][2] == pos):
-    #                 return (0,0)
-    #             elif(board[0][2] == pos):
-    #                 return (2,0)
-    #             else:
-    #                 return (0,2)
-    #         else:
-    #             return (choice(spots)) #randomCorner()
-
-    #     elif(turn == 4 and noCornerTaken(spots) and notOpposit(spots)):
-    #         #place next to one of the enemy location
-    #         print("place next to enemy")
-    #         if((board[1][0] == enemiePos) or (board[0][1]) == enemiePos):
-    #             return(0,0)
-    #         else:
-    #             return(2,2)
-    #     print("random move in playable moves", spots)
-    #     return (choice(spots)) #random move in playable moves
-
-    # else: #player/not CPU
-    #     x = int(input("X: "))
-    #     y = int(input("Y: "))
-    # return (x,y)        
-#[0,0,0]
-#[0,1,-1]
-#[0,-1,0]
-
-#[0,0,-1]
-#[-1,1,1]
-#[1,-1,-1]
-
-#When CPU starts first:
-#1st: random corner
-#2nd: opposit corner
-
-#1 random corner,2 center, 3 opposit corner, 4 defending loop
-#1 random corner, not center, random corner that isn't opposit corner, defends or looses, wins or random corner
-#
-# 
-#  
-
-#1,2,3 : random corner
-
-
-
-#When CPU plays second
-#1st: if center taken : random corner, else : always center
-#4th : if no corner taken and isOppositExisting = false: search for row/line with a -1 and put a 1 in it
-#6th: take a corner
-
-#unsupported : cpu:coin, p2:coin opposé, cpu: random corner, p2:between corners, cpu:?
+    else: #player/not CPU
+        x = int(input("X: "))
+        y = int(input("Y: "))
+        return (x,y)            
 
 def updateSpot(coords, board, pTurn):
     board[coords[1]][coords[0]] = 1 + (pTurn * -2) #if opposer = 0 then case = 1 | if opposer = 1 then case = -1
@@ -191,13 +171,14 @@ def pTurnSwitch(pTurn):
     pTurn = 1 * (1 - pTurn) # if pTurn = 1 => then pTurn = 1*(1-1) = 0, if pTurn = 0 => then pTurn = 1*(1-0) = 1*1 = 1 || switches between 0 and 1
     return pTurn
 
-def playTurn(board, pTurn, player,turn):
-    spot = chooseSpot(player, board, pTurn, turn)
+def playTurn(board, pTurn, player,turn, spotsLog):
+    spot = chooseSpot(player, board, pTurn, turn, spotsLog)
 
     while (not isSpotFree(spot,board)): #if spot not free, we ask the player to pick a new one
         print("Spot is taken already, please choose another spot.",board)
-        spot = chooseSpot(player, board, pTurn,turn)
+        spot = chooseSpot(player, board, pTurn,turn, spotsLog)
     updateSpot(spot, board, pTurn)
+    return spot
 
 def playGame():
     board = [ 
@@ -211,11 +192,16 @@ def playGame():
     pTurn = randrange(2)
     isOver = False
     turn = 1
-    
+    spotsLog = [[],[]]
+
+
     print(players[pTurn] + " starts the game.")
 
     while (not isOver):
-        playTurn(board, pTurn, players[pTurn],turn)
+        print(turn)
+        spot = playTurn(board, pTurn, players[pTurn],turn, spotsLog)
+        spotsLog[pTurn].append(spot)
+        print(spotsLog)
 
         isOver = isWinner(board)
         if(len(getPlayableSpots(board)) == 0):
