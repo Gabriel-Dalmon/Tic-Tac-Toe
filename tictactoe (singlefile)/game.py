@@ -128,7 +128,7 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
                 return (2,0)
             elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,2),(0,1)]):
                 return (0,2)
-            elif(board[1][1] == 0):
+            elif(board[1][1] != 0):
                 corner = choice(corners)
                 return corner
                 
@@ -147,6 +147,7 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
             
 
         randomSpot = choice(spots)
+        print("randomMove")
         return (randomSpot[1],randomSpot[0])
 
     else: #player/not CPU
@@ -185,7 +186,7 @@ def playGame():
             [0,0,0]
         ]
 
-    players = ["CPU","CPU"]
+    players = ["Player","CPU"]
     winner = None
     pTurn = randrange(2)
     isOver = False
