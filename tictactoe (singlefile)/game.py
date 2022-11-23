@@ -155,9 +155,15 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
         return (randomSpot[1],randomSpot[0])
 
     else: #player/not CPU
-        x = int(input("X: "))
-        y = int(input("Y: "))
-        return (x,y)            
+        try:
+            x = int(input("X: "))
+            y = int(input("Y: "))
+            if (x < 0) or (x > 2) or (y < 0) or (y > 2):
+                raise Exception   
+        except:
+            print("Please select correct coordinates, must be an integer number between 0 and 2 (both included), can't be a chain of characters or empty.")
+            x, y = chooseSpot(player, board, pTurn, turn, spotsLog)     
+        return (x,y)
 
 def updateSpot(coords, board, pTurn):
     board[coords[1]][coords[0]] = 1 + (pTurn * -2) #if opposer = 0 then case = 1 | if opposer = 1 then case = -1
@@ -190,7 +196,7 @@ def playGame():
             [0,0,0]
         ]
 
-    players = ["CPU","CPU"]
+    players = ["Player","CPU"]
     winner = None
     pTurn = randrange(2)
     isOver = False
@@ -207,10 +213,11 @@ def playGame():
         isOver = isWinner(board)
         if(len(getPlayableSpots(board)) == 0):
             isOver = 1
-        pTurn = pTurnSwitch(pTurn)
+        
 
         consoleDisplay(board, players[pTurn])
         turn +=1
+        pTurn = pTurnSwitch(pTurn)
 
     winner = pTurnSwitch(pTurn)
     if(isOver != 1):
