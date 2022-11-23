@@ -1,6 +1,6 @@
 from random import randrange, choice
 
-def consoleDisplay(board):
+def consoleDisplay(board, player):
     displayBoard = [
         [" "," "," "],
         [" "," "," "],
@@ -12,7 +12,8 @@ def consoleDisplay(board):
                 displayBoard[row][col] = "x"
             elif(board[row][col] == -1):
                 displayBoard[row][col] = "o"
-    print("",displayBoard[0][0], "|",displayBoard[0][1], "|", displayBoard[0][2], "\n",
+
+    print(player,"'s turn !\n",displayBoard[0][0], "|",displayBoard[0][1], "|", displayBoard[0][2], "\n",
         "-", "|","-", "|","-","\n",
         displayBoard[1][0], "|",displayBoard[1][1], "|",displayBoard[1][2],"\n",
         "-", "|","-", "|","-","\n",
@@ -93,6 +94,8 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
                                 return (2-i,i)
         
         corners = getCorners(spots)
+
+        #when CPU plays first
         if(turn == 1):
             corner = choice(corners)
             return corner
@@ -104,9 +107,9 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
                     return(0,1)
                 else:
                     return(2,1)
-            elif((board[1][1] == 0) and (len(corners) == 3)):
-                    if(spotsLog[pTurnSwitch(pTurn)][0][1] != 1 ):
-                        if(spotsLog[pTurn][0][1] == 2):
+            elif((board[1][1] == 0) and (len(corners) == 3)): #if the player picks a cross extremity at his first turn
+                    if(spotsLog[pTurnSwitch(pTurn)][0][1] != 1 ): #if this pick isn't on the middle line
+                        if(spotsLog[pTurn][0][1] == 2): # and if 
                             return (spotsLog[pTurn][0][0],0)
                         else:
                             return (spotsLog[pTurn][0][0],2)
@@ -116,39 +119,38 @@ def chooseSpot(player, board, pTurn, turn, spotsLog):
                         else:
                             return (2,spotsLog[pTurn][0][1])
         elif(turn == 5):
-            if(len(corners) == 1):
-                return choice(corners)
-            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1),(1,2),(0,1)]): #if opponent played elsewhere at his first turn than in the center or in a corner
+            if(len(corners) == 1): #if all the 3 corners were taken
+                return corners[0] #then pick last one
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1),(1,2),(0,1)]): #if opponent played one of the cross extremities at his first turn
                 return (1,1) #then pick center
         
+        #when CPU doesn't play first
         elif(turn == 2):
-            print(spotsLog[pTurnSwitch(pTurn)][0])
-            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]):
+            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]): #if opponent played in a corner turn 1
                 return (1,1)
-            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1)]):
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,0),(2,1)]): #if a player played in one of two of the cross extremities not opposed
                 return (2,0)
-            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,2),(0,1)]):
+            elif(spotsLog[pTurnSwitch(pTurn)][0] in [(1,2),(0,1)]): #if a player played in one of the two other of the cross extremities not opposed
                 return (0,2)
-            elif(board[1][1] == 0):
+            elif(board[1][1] != 0): #if opponent took center
                 corner = choice(corners)
                 return corner
-                
+
         elif(turn == 4):
-            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]): 
+            if(spotsLog[pTurnSwitch(pTurn)][0] in [(0,0),(2,0),(2,2),(0,2)]): #if the player had taken a corner as first move
                 if(sum(board[1]) != 0):
                     return (0,1)
                 else:
                     return (1,0)
-            elif(spotsLog[pTurnSwitch(pTurn)][0] == (1,1)):
+            elif(spotsLog[pTurnSwitch(pTurn)][0] == (1,1)): #if the player had first taken center and that he took as the second move the opposit corner to the one the CPU had taken
                 corner = choice(corners)
                 return corner
-            elif(((spotsLog[pTurnSwitch(pTurn)][0][0] == spotsLog[pTurnSwitch(pTurn)][1][0]) or (spotsLog[pTurnSwitch(pTurn)][0][1] == spotsLog[pTurnSwitch(pTurn)][1][1])) and board[0][0] == 0):
+            elif(((spotsLog[pTurnSwitch(pTurn)][0][0] == spotsLog[pTurnSwitch(pTurn)][1][0]) or (spotsLog[pTurnSwitch(pTurn)][0][1] == spotsLog[pTurnSwitch(pTurn)][1][1])) and board[1][1] == 0): #if a player takes first one cross case and then the corner left next to his previous pick
                 corners.remove(getOppositCorner(spotsLog[pTurn][0]))
                 return corners[0]
             
 
         randomSpot = choice(spots)
-        print("random pick")
         return (randomSpot[1],randomSpot[0])
 
     else: #player/not CPU
@@ -198,17 +200,15 @@ def playGame():
     print(players[pTurn] + " starts the game.")
 
     while (not isOver):
-        print(turn)
         spot = playTurn(board, pTurn, players[pTurn],turn, spotsLog)
         spotsLog[pTurn].append(spot)
-        print(spotsLog)
 
         isOver = isWinner(board)
         if(len(getPlayableSpots(board)) == 0):
             isOver = 1
         pTurn = pTurnSwitch(pTurn)
 
-        consoleDisplay(board)
+        consoleDisplay(board, players[pTurn])
         turn +=1
 
     winner = pTurnSwitch(pTurn)
