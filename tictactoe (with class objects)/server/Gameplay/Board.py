@@ -1,6 +1,3 @@
-from tkinter import *
-from functools import partial
-
 class Board:
 
     def __init__(self):
@@ -11,6 +8,13 @@ class Board:
             [0,0,0]
         ]
 
+    def getPlayableSpots(self):
+        spots = []
+        for row in range(0,3):
+            for col in range(0,3):
+                if self.board[row][col] == 0:
+                    spots.append((row,col))
+        return spots 
 
     def consoleDisplay(self):
         print(self.board[0], "\n",self.board[1],"\n",self.board[2])
@@ -21,6 +25,7 @@ class Board:
 
     def isWinner(self): #if Win Condition is verified, then return win type and index of row, col or diag.
         winCond = [3,-3] #the winCond is verified if the sum of a row, col, diag is equal to 3 or -3.
+
         lDiagSum = self.board[0][0] + self.board[1][1] + self.board[2][2] #Diagonal starting top left
         rDiagSum = self.board[0][2] + self.board[1][1] + self.board[2][0] #Diagonal starting top right
         if(lDiagSum in winCond):
@@ -35,6 +40,8 @@ class Board:
                     return ("row",i)
                 elif(colSum in winCond):
                     return ("col",i)
+        if(len(self.getPlayableSpots()) == 0):
+            return "draw"
         return None
 
     def updateSpot(self, coords, opposer):

@@ -1,21 +1,28 @@
 import random
 from Board import *
-from DisplayBoard import *
+from Player import *
 
 class Game:
 
     def __init__(self,player1, player2):
-        self.board = DisplayBoard()
-        self.players = [player1,player2]
+        self.players = [Player(player1),Player(player2)]
+        self.resetBoard()
+        self.isRunning = True
         self.winner = None
+
+    def resetBoard(self):
+        self.board = Board()
         self.pTurn = random.randrange(2)
-        self.isOver = False
+        
+        
 
 #=== Functions
 
-    def setWinner(self, winData):
-        self.isOver = True
+    def setWinner(self, winInfo):
+        self.isRunning = False
         self.winner = self.players[self.pTurn]
+        self.winner.score += 1
+        self.winType = winInfo
 
     def playTurn(self):
         spot = self.players[self.pTurn].chooseSpot()
@@ -29,14 +36,27 @@ class Game:
     def pTurnSwitch(self):
         self.pTurn = 1 * (1 - self.pTurn) # if pTurn = 1 => then pTurn = 1*(1-1) = 0, if pTurn = 0 => then pTurn = 1*(1-0) = 1*1 = 1 || switches between 0 and 1
 
+    def playGameClient(self, casePicked):
+        if(self.board.isSpotFree(casePicked)):#if the case is free, then update logic and engine board
+            self.board.updateSpot(casePicked, self.pTurn)
+            self.players[1].updateBoard(casePicked,self.pTurn)
+            #self.memory[0].updateCase(casePicked, self.memory[1].pTurn)
+            winInfo = self.board.isWinner()
+
+            if(winInfo):
+                self.setWinner(winInfo)
+            self.pTurnSwitch()
+            
+    
+
     def playGame(self):
         print(self.players[self.pTurn].name + " starts the game.")
-        while (not self.isOver):
+        while (not self.isRunning):
             self.playTurn()
 
-            winData = self.board.isWinner()
-            if(winData):#if nobody is winning, winData = None
-                self.setWinner(winData)
+            winInfo = self.board.isWinner()
+            if(winInfo):
+                self.setWinner(winInfo)
 
 
             self.pTurnSwitch()
@@ -46,8 +66,6 @@ class Game:
 
 
 if __name__ == "__main__":
-    from Player import *
-
-    game = Game(Player('LnCol'), Player('Json'))
-
+    
+    game = Game("LnCol", "Json")
     game.playGame()
