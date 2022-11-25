@@ -1,5 +1,6 @@
 import pygame
 from src.UI.Menu import *
+import src.UI.Button as btn
 import src.UI.Board as pgBoard
 from src.Gameplay.Game import *
 from ctypes import windll #uses Windows c functions to get the size of the monitor
@@ -53,6 +54,9 @@ class Client:
             while game.isRunning:
                 self.screen.fill(self.theme[0])
                 board.drawBoard()
+                backBtn = btn.Button("Back", self.mainMenuLoad, ('freesansbold.ttf', 32))
+                backBtn.rect.center = (8 * self.screen.get_width() //10, 8 * self.screen.get_height() //10)
+                backBtn.blitSelf(self.screen)
 
                 caseClicked = None
                 if(type(game.players[game.pTurn]) == ai.TttAI):
@@ -60,6 +64,11 @@ class Client:
                 for e in pygame.event.get():
                     if e.type == pygame.MOUSEBUTTONDOWN:
                         caseClicked = board.getCaseClicked(e.pos)
+                        if (backBtn.rect.collidepoint(e.pos)):
+                            action = backBtn.command
+                            game.isRunning = False
+                            singleplayerLoaded = False
+                            
                 if caseClicked != None:
                     if(game.board.isSpotFree(caseClicked)):
                         board.updateCase(caseClicked, game.pTurn)
@@ -75,19 +84,21 @@ class Client:
                 board.drawSymbols()
                 self.clock.tick(30)     
                 pygame.display.update()
-            if game.winType == "draw":
-                text = font.render("It's a Draw !", True, "white")
-            else:
-                text = font.render(game.winner.name + " won the game !", True, "white")
-            textRect = text.get_rect()
-            textRect.center = (self.screen.get_width() // 2, self.screen.get_height() // 10)
-            self.screen.blit(text, textRect)
+            if singleplayerLoaded:
+                if game.winType == "draw":
+                    text = font.render("It's a Draw !", True, "white")
+                else:
+                    text = font.render(game.winner.name + " won the game !", True, "white")
+                textRect = text.get_rect()
+                textRect.center = (self.screen.get_width() // 2, self.screen.get_height() // 10)
+                self.screen.blit(text, textRect)
 
-            for e in pygame.event.get():
-                if e.type == pygame.MOUSEBUTTONDOWN:
-                    game.isRunning = True
-            self.clock.tick(20)
-            pygame.display.update()
+                for e in pygame.event.get():
+                    if e.type == pygame.MOUSEBUTTONDOWN:
+                        game.isRunning = True
+                self.clock.tick(20)
+                pygame.display.update()
+        action()
 
 
     def multiplayerLoad(self):
