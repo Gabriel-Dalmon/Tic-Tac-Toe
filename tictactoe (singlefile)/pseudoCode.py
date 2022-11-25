@@ -1,3 +1,5 @@
+#DÉBUT
+
 # admettre que l'exécution de la fonction [choice] retourne un élément aléatoire d'une liste donnée en paramètre.
 # admettre que l'exécution de la fonction [randrange] retourne un entier aléatoire compris dans un encadrement d'entiers donnée en paramètre.
 # 
@@ -85,8 +87,8 @@
 #                     alors retourner (0,1) #commentaire : extrémité de la croix centrale sur la colonne adjacente au coin selectionné précédemment 0 du tableau (board) 
 #                 sinon
 #                     alors retourner (2,1) #commentaire : extrémité de la croix centrale sur la colonne adjacente au coin selectionné précédemment du tableau (board) 
-#stopped l99 
-# 
+# #commentaire :stopped l99 
+# FIN
 # 
 # 
 # 
